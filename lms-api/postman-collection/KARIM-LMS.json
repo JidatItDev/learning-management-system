@@ -1,0 +1,4682 @@
+{
+	"info": {
+		"_postman_id": "5d8dc9be-8d03-4d3a-8097-c2e182c9f2a5",
+		"name": "KARIM LMS",
+		"description": "Postman collection to test all routes in the Node.js/Express/Sequelize system, including user management, OTP flows, group operations, company operations, and authentication for withPassword and passwordLess flows.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30095203"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login (withPassword)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"adminpass\"\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/auth/login",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Logs in an admin user. Replace email/password with valid credentials. Save 'access_token' as {{admin_jwt}} and 'refresh_token' as {{refresh_token}}."
+					},
+					"response": []
+				},
+				{
+					"name": "Initiate password less Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response has userId', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.userId).to.be.a('string');",
+									"    pm.environment.set('userId', jsonData.data.userId);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"email\": \"aqeel4622.work@gmail.com\"\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/auth/passwordless/initiate",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"passwordless",
+								"initiate"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Passwordless Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Response has tokens and user', function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.be.true;",
+									"    pm.expect(jsonData.data.accessToken).to.be.a('string');",
+									"    pm.expect(jsonData.data.refreshToken).to.be.a('string');",
+									"    pm.expect(jsonData.data.user).to.have.property('id');",
+									"    pm.environment.set('token', jsonData.data.accessToken);",
+									"    pm.environment.set('refreshToken', jsonData.data.refreshToken);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": \"{{userId}}\",\n    \"otp\": \"970422\"\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/auth/passwordless/verify",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"passwordless",
+								"verify"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk2ZWNkNmVhLTU0MmYtNGExYy1hYmI1LThjNTRiOGE0MDg0MyIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJBZG1pbiIsImxhc3ROYW1lIjoiVXNlciIsImlzQWN0aXZlIjp0cnVlLCJpYXQiOjE3NTM0NTIzODcsImV4cCI6MTc1MzQ1NDE4N30.vqDt5r2nK5dzt1z-S6JkDwfa72oNzafX7N_zNMy-IWQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refreshes access token. Save new 'access_token' as {{admin_jwt}}."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjBmYmM1ZTViLWUyMTEtNGY3Yy1iOWMyLTQ2YWNjZTk1MTIxNiIsImVtYWlsIjoiYXFlZWw0NjIyLndvcmtAZ21haWwuY29tIiwicm9sZSI6Imdyb3VwTGVhZGVyIiwiZmlyc3ROYW1lIjoiQXFlZWwiLCJsYXN0TmFtZSI6IkFobWFkIiwiaXNBY3RpdmUiOnRydWUsImlhdCI6MTc1MzUyNjMxNSwiZXhwIjoxNzUzNTI4MTE1fQ.AZ5Q8RhpfAD4boeIHh6CKvtRfDi78EqD2y_nvCFyYGw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/auth/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"logout"
+							]
+						},
+						"description": "Logs out user by revoking refresh token. Check Tokens table for removal."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Lessons",
+			"item": [
+				{
+					"name": "Get All Lessons",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/lessons?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lessons"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "Test",
+									"disabled": true
+								},
+								{
+									"key": "courseId",
+									"value": "123e4567-e89b-12d3-a456-426614174000",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Lessons by Course",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/lessons/course/123e4567-e89b-12d3-a456-426614174000?page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lessons",
+								"course",
+								"123e4567-e89b-12d3-a456-426614174000"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Lesson by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/lessons/123e4567-e89b-12d3-a456-426614174001",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lessons",
+								"123e4567-e89b-12d3-a456-426614174001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Lesson",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"courseId\": \"a3acd8bd-f7a5-4f18-9bf0-95688c85e720\",\n    \"title\": \"New Lesson Test\",\n    \"description\": \"A test lesson\",\n    \"videoName\" : \"testing\",\n    \"videoUrl\": \"https://example.com/video\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/lessons",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lessons"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Lesson",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"title\":\"Updated Lesson\",\"description\":\"Updated description\",\"videoUrl\":\"https://example.com/updated-video\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/lessons/123e4567-e89b-12d3-a456-426614174001",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lessons",
+								"123e4567-e89b-12d3-a456-426614174001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Lesson",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/lessons/123e4567-e89b-12d3-a456-426614174001",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lessons",
+								"123e4567-e89b-12d3-a456-426614174001"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Lesson Exists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/lessons/123e4567-e89b-12d3-a456-426614174001/exists",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"lessons",
+								"123e4567-e89b-12d3-a456-426614174001",
+								"exists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Companies",
+			"item": [
+				{
+					"name": "Create Company",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Test Company\",\n  \"vat_number\": \"VAT123456\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/companies",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"companies"
+							]
+						},
+						"description": "Creates a company. Save 'id' as {{company_id}}."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Companies",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/companies?page=1&limit=10",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"companies"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "Test",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Gets all companies with filtering and pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Company by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/companies/{{company_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"companies",
+								"{{company_id}}"
+							]
+						},
+						"description": "Gets a company by ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Company",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Test Company\",\n  \"vat_number\": \"VAT654321\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/companies/{{company_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"companies",
+								"{{company_id}}"
+							]
+						},
+						"description": "Updates a company."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Company",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/companies/{{company_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"companies",
+								"{{company_id}}"
+							]
+						},
+						"description": "Deletes a company."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Create User (withPassword)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Usama\",\n  \"lastName\": \"Nigga\",\n  \"email\": \"usamahayatn@gmail.com\",\n  \"role\": \"groupLeader\",\n  \"signInType\": \"withPassword\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/create-user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"create-user"
+							]
+						},
+						"description": "Creates a user with sign_in_type 'withPassword'. Save 'user.id' as {{user_id_with_password}} and check email for OTP."
+					},
+					"response": []
+				},
+				{
+					"name": "Create User (passwordLess)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Usama\",\n  \"lastName\": \"Smith\",\n  \"email\": \"usamahayatnissoana@gmail.com\",\n  \"role\": \"subscriber\",\n  \"signInType\": \"passwordLess\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/create-user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"create-user"
+							]
+						},
+						"description": "Creates a user with sign_in_type 'passwordLess'. Save 'user.id' as {{user_id_passwordless}} and check email for OTP."
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Create Users",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"users\": [\n    {\n      \"firstName\": \"Bob\",\n      \"lastName\": \"Johnson\",\n      \"email\": \"bob.johnson@example.com\",\n      \"role\": \"subscriber\",\n      \"sign_in_type\": \"withPassword\"\n    },\n    {\n      \"firstName\": \"Alice\",\n      \"lastName\": \"Brown\",\n      \"email\": \"alice.brown@example.com\",\n      \"role\": \"subscriber\",\n      \"sign_in_type\": \"passwordLess\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/bulk",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"bulk"
+							]
+						},
+						"description": "Bulk creates users. Check email for OTPs."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Users",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/users/get-users?page=1&limit=10",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"get-users"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "admin",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Gets all users with filtering and pagination."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Stats",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"stats"
+							]
+						},
+						"description": "Gets user statistics."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Current User Permissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/me/permissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"me",
+								"permissions"
+							]
+						},
+						"description": "Gets the current user's permissions."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Users by Role",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Ijk2ZWNkNmVhLTU0MmYtNGExYy1hYmI1LThjNTRiOGE0MDg0MyIsImVtYWlsIjoiYWRtaW5AZXhhbXBsZS5jb20iLCJyb2xlIjoiYWRtaW4iLCJmaXJzdE5hbWUiOiJBZG1pbiIsImxhc3ROYW1lIjoiVXNlciIsImlzQWN0aXZlIjp0cnVlLCJpYXQiOjE3NTM0NDg2MjEsImV4cCI6MTc1MzQ0OTUyMX0.dH9WZSLxou4MPI8_qxUzRCgsu9bZia3fsmBLnTXTKbA",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/role/admin",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"role",
+								"admin"
+							]
+						},
+						"description": "Gets users by role."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by Email",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/email/john.doe@example.com",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"email",
+								"john.doe@example.com"
+							]
+						},
+						"description": "Gets user by email."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{{user_id_with_password}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{user_id_with_password}}"
+							]
+						},
+						"description": "Gets user by ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Check User Exists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{{user_id_with_password}}/exists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{user_id_with_password}}",
+								"exists"
+							]
+						},
+						"description": "Checks if user exists."
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Groups",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{{user_id_with_password}}/user-groups",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{user_id_with_password}}",
+								"user-groups"
+							]
+						},
+						"description": "Gets groups for a user."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe Updated\",\n  \"email\": \"john.doe.updated@example.com\",\n  \"role\": \"subscriber\",\n  \"sign_in_type\": \"withPassword\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{{user_id_with_password}}/update-user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{user_id_with_password}}",
+								"update-user"
+							]
+						},
+						"description": "Updates a user."
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle User Status",
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{{user_id_with_password}}/toggle-status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{user_id_with_password}}",
+								"toggle-status"
+							]
+						},
+						"description": "Toggles user active status."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/users/{{user_id_with_password}}/delete-user",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{user_id_with_password}}",
+								"delete-user"
+							]
+						},
+						"description": "Deletes a user."
+					},
+					"response": []
+				},
+				{
+					"name": "Email Test",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\" : \"aqeel4622@outlook.com\",\n  \"type\": \"microsoft\"\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/users/test-email",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"test-email"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Email Connection",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/users/test-email-connection",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"test-email-connection"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Test Redis",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{karim}}/api/v1/users/test-redis-connection",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"test-redis-connection"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "OTP",
+			"item": [
+				{
+					"name": "Verify OTP (withPassword)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{user_id_with_password}}\",\n  \"otp\": \"{{otp_with_password}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/otps/verify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"otps",
+								"verify"
+							]
+						},
+						"description": "Verifies OTP for withPassword user. Replace {{otp_with_password}} with received OTP."
+					},
+					"response": []
+				},
+				{
+					"name": "Set Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{user_id_with_password}}\",\n  \"otp\": \"{{otp_with_password}}\",\n  \"password\": \"newPassword123\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/otps/set-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"otps",
+								"set-password"
+							]
+						},
+						"description": "Sets password for withPassword user. Replace {{otp_with_password}} with a new OTP if expired."
+					},
+					"response": []
+				},
+				{
+					"name": "Request OTP (passwordLess Login)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"jane.smith@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/otps/forgot-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"otps",
+								"forgot-password"
+							]
+						},
+						"description": "Requests OTP for passwordLess login. Check email for OTP."
+					},
+					"response": []
+				},
+				{
+					"name": "Verify OTP (passwordLess Login)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{user_id_passwordless}}\",\n  \"otp\": \"{{otp_passwordless}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/otps/verify",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"otps",
+								"verify"
+							]
+						},
+						"description": "Verifies OTP for passwordLess login. Save 'token' as {{user_jwt}}."
+					},
+					"response": []
+				},
+				{
+					"name": "Resend OTP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"userId\": \"{{user_id_with_password}}\",\n  \"purpose\": \"verify\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/otps/resend",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"otps",
+								"resend"
+							]
+						},
+						"description": "Resends OTP for a user. Check email for new OTP."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Courses",
+			"item": [
+				{
+					"name": "Get All Courses",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}",
+								"description": "Admin JWT token for authentication"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/courses?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"courses"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "",
+									"description": "Filter by course title (partial match)",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": "",
+									"description": "Filter by course description (partial match)",
+									"disabled": true
+								},
+								{
+									"key": "createdBy",
+									"value": "",
+									"description": "Filter by creator user ID",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page (max 100)"
+								}
+							]
+						},
+						"description": "Retrieves all courses with optional filtering and pagination. Requires LIST_COURSES permission."
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Courses with Filters",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/courses?page=1&limit=5",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"courses"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "JavaScript",
+									"description": "Search for courses with 'JavaScript' in title",
+									"disabled": true
+								},
+								{
+									"key": "description",
+									"value": "programming",
+									"description": "Search for courses with 'programming' in description",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "5"
+								}
+							]
+						},
+						"description": "Example of filtered course search with title and description filters."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Course by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/courses/{{course_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"{{course_id}}"
+							]
+						},
+						"description": "Retrieves a specific course by ID with creator information. Requires VIEW_COURSE permission."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Introduction to JavaScript\",\n    \"description\": \"A comprehensive course covering JavaScript fundamentals, ES6+ features, and modern development practices.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/courses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses"
+							]
+						},
+						"description": "Creates a new course. Only admins can create courses. The createdBy field is automatically set to the authenticated user. Save the returned course 'id' as {{course_id}}."
+					},
+					"response": []
+				},
+				{
+					"name": "Create Course (Minimal)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Basic HTML Course\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/courses",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses"
+							]
+						},
+						"description": "Creates a course with only required fields (title). Description is optional."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Course",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Advanced JavaScript Programming\",\n  \"description\": \"An updated comprehensive course covering advanced JavaScript concepts, design patterns, and modern frameworks.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/courses/{{course_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"{{course_id}}"
+							]
+						},
+						"description": "Updates an existing course. Only the course creator or admin can update. Both title and description are optional in the request body."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Course (Partial)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Updated description only - title remains unchanged\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/courses/{{course_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"{{course_id}}"
+							]
+						},
+						"description": "Example of partial update - only updating description."
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Course",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/courses/{{course_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"{{course_id}}"
+							]
+						},
+						"description": "Deletes a course. Only the course creator or admin can delete."
+					},
+					"response": []
+				},
+				{
+					"name": "Check Course Exists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/courses/{{course_id}}/exists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"{{course_id}}",
+								"exists"
+							]
+						},
+						"description": "Checks if a course exists by ID. Returns { exists: true/false }. Requires VIEW_COURSE permission."
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_jwt}}"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/courses/my-courses?title=&description=&page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"courses",
+								"my-courses"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "",
+									"description": "Filter by course title"
+								},
+								{
+									"key": "description",
+									"value": "",
+									"description": "Filter by course description"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						},
+						"description": "Gets courses created by the authenticated user. Only admins can create courses, so this is admin-only."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Course Lesson Progress",
+			"item": [
+				{
+					"name": "Get All Progress",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/course-lesson-progress?userId=123e4567-e89b-12d3-a456-426614174003&courseId=123e4567-e89b-12d3-a456-426614174000&isCompleted=true&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course-lesson-progress"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "123e4567-e89b-12d3-a456-426614174003"
+								},
+								{
+									"key": "courseId",
+									"value": "123e4567-e89b-12d3-a456-426614174000"
+								},
+								{
+									"key": "isCompleted",
+									"value": "true"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Progress",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/course-lesson-progress/my-progress?courseId=123e4567-e89b-12d3-a456-426614174000&isCompleted=true&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course-lesson-progress",
+								"my-progress"
+							],
+							"query": [
+								{
+									"key": "courseId",
+									"value": "123e4567-e89b-12d3-a456-426614174000"
+								},
+								{
+									"key": "isCompleted",
+									"value": "true"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Progress by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/course-lesson-progress/123e4567-e89b-12d3-a456-426614174004",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course-lesson-progress",
+								"123e4567-e89b-12d3-a456-426614174004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Progress",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"userId\":\"123e4567-e89b-12d3-a456-426614174003\",\"lessonId\":\"123e4567-e89b-12d3-a456-426614174001\",\"isCompleted\":true}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/course-lesson-progress",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course-lesson-progress"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Progress",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"isCompleted\":false}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/course-lesson-progress/123e4567-e89b-12d3-a456-426614174004",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course-lesson-progress",
+								"123e4567-e89b-12d3-a456-426614174004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Progress",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/course-lesson-progress/123e4567-e89b-12d3-a456-426614174004",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course-lesson-progress",
+								"123e4567-e89b-12d3-a456-426614174004"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Progress Exists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/course-lesson-progress/123e4567-e89b-12d3-a456-426614174004/exists",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"course-lesson-progress",
+								"123e4567-e89b-12d3-a456-426614174004",
+								"exists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Courses",
+			"item": [
+				{
+					"name": "Get All User Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-courses?userId=123e4567-e89b-12d3-a456-426614174003&courseId=123e4567-e89b-12d3-a456-426614174000&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-courses"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "123e4567-e89b-12d3-a456-426614174003"
+								},
+								{
+									"key": "courseId",
+									"value": "123e4567-e89b-12d3-a456-426614174000"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Course by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-courses/123e4567-e89b-12d3-a456-426614174005",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-courses",
+								"123e4567-e89b-12d3-a456-426614174005"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User Course",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"userId\":\"123e4567-e89b-12d3-a456-426614174003\",\"courseId\":\"123e4567-e89b-12d3-a456-426614174000\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/user-courses",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-courses"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete User Course",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-courses/123e4567-e89b-12d3-a456-426614174005",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-courses",
+								"123e4567-e89b-12d3-a456-426614174005"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check User Course Exists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/user-courses/123e4567-e89b-12d3-a456-426614174005/exists",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"user-courses",
+								"123e4567-e89b-12d3-a456-426614174005",
+								"exists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bundles",
+			"item": [
+				{
+					"name": "Get All Bundles",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/bundles?page=1&limit=10",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bundles"
+							],
+							"query": [
+								{
+									"key": "title",
+									"value": "Test",
+									"disabled": true
+								},
+								{
+									"key": "bundleType",
+									"value": "Simulated Phishing %26 Security Awareness Training",
+									"disabled": true
+								},
+								{
+									"key": "courseId",
+									"value": "123e4567-e89b-12d3-a456-426614174000",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bundle by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/bundles/66d09618-4e6a-4261-a48a-2134826a4498",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bundles",
+								"66d09618-4e6a-4261-a48a-2134826a4498"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Bundle",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"New Bundle two\",\n    \"description\": \"A test bundle three\",\n    \"category\": \"Development\",\n    \"bundleType\": \"Simulated Phishing & Security Awareness Training\",\n    \"seatPrice\": 99.99,\n    \"courseIds\": [\n        \"a3acd8bd-f7a5-4f18-9bf0-95688c85e720\",\n        \"4d6ac756-e5a7-4241-beff-cd7f18524638\"\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/bundles",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bundles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Bundle",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"title\":\"Updated Bundle\",\"description\":\"Updated description\",\"seatPrice\":89.99,\"courseIds\":[\"123e4567-e89b-12d3-a456-426614174000\"]}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/bundles/123e4567-e89b-12d3-a456-426614174006",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bundles",
+								"123e4567-e89b-12d3-a456-426614174006"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bundle",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/bundles/123e4567-e89b-12d3-a456-426614174006",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bundles",
+								"123e4567-e89b-12d3-a456-426614174006"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Bundle Exists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/bundles/123e4567-e89b-12d3-a456-426614174006/exists",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"bundles",
+								"123e4567-e89b-12d3-a456-426614174006",
+								"exists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Discounts",
+			"item": [
+				{
+					"name": "Get All Discounts",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/discounts?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"discounts"
+							],
+							"query": [
+								{
+									"key": "bundleId",
+									"value": "{{bundle_id}}",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Discount by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/discounts/{{discount_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"discounts",
+								"{{discount_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Discount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bundleIds\": [\n        \"f931e0aa-e24e-4f22-b160-5fc6ea8b0df5\",\n        \"66d09618-4e6a-4261-a48a-2134826a4498\"\n        ],\n    \"percentage\": 10,\n    \"seats\": {\n        \"percentage\" : 5,\n        \"seatsThreshold\" : 2\n    }\n}\n    "
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/discounts",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"discounts"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Discount",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"percentage\": 15,\"expiryDate\": \"2026-01-31T23:59:59Z\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/discounts/{{discount_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"discounts",
+								"{{discount_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Discount",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/discounts/{{discount_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"discounts",
+								"{{discount_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Bundle Purchases",
+			"item": [
+				{
+					"name": "Get All Bundle Purchases",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/api/v1/bundlePurchases?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bundlePurchases"
+							],
+							"query": [
+								{
+									"key": "bundleId",
+									"value": "{{bundle_id}}",
+									"disabled": true
+								},
+								{
+									"key": "purchasedBy",
+									"value": "{{user_id}}",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Bundle Purchase by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/bundle-purchases/{{bundle_purchase_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"bundle-purchases",
+								"{{bundle_purchase_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Bundle Purchase",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"bundleId\": \"{{bundle_id}}\",\n    \"seatsPurchased\": 1,\n    \"discountId\" : \"{{discount_id}}\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/bundlePurchases",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"bundlePurchases"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Bundle Purchase",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"seatsPurchased\": 15}"
+						},
+						"url": {
+							"raw": "{{base_url}}/bundle-purchases/{{bundle_purchase_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"bundle-purchases",
+								"{{bundle_purchase_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Bundle Purchase",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/bundle-purchases/{{bundle_purchase_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"bundle-purchases",
+								"{{bundle_purchase_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Group Bundles",
+			"item": [
+				{
+					"name": "Get All Group Bundles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/groupBundles?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"groupBundles"
+							],
+							"query": [
+								{
+									"key": "groupId",
+									"value": "{{group_id}}",
+									"disabled": true
+								},
+								{
+									"key": "bundlePurchaseId",
+									"value": "{{bundle_purchase_id}}",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group Bundle by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/group-bundles/{{group_bundle_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group-bundles",
+								"{{group_bundle_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Group Bundle",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"groupId\": \"{{group_id}}\",\n    \"bundlePurchaseId\": \"{{bundle_purchase_id}}\",\n    \"seatsAllocated\": 5\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/groupBundles",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"groupBundles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Group Bundle",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"seatsAllocated\": 10}"
+						},
+						"url": {
+							"raw": "{{base_url}}/group-bundles/{{group_bundle_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group-bundles",
+								"{{group_bundle_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Group Bundle",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/group-bundles/{{group_bundle_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"group-bundles",
+								"{{group_bundle_id}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Groups",
+			"item": [
+				{
+					"name": "Create Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', () => {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Group created successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data).to.have.property('id');",
+									"  pm.expect(jsonData.data.name).to.equal('New Test Group');",
+									"  pm.expect(jsonData.data.companyId).to.equal(pm.environment.get('companyId'));",
+									"  pm.expect(jsonData.data.signInType).to.equal('passwordless');",
+									"  pm.expect(jsonData.data.gophishGroupID).to.equal('gophish-456');",
+									"  pm.expect(jsonData.data.isActive).to.be.true;",
+									"  pm.expect(jsonData.createdBy.id).to.equal(pm.environment.get('adminUserId'));",
+									"  pm.environment.set('newGroupId', jsonData.data.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"New Test Group\",\n    \"companyId\": \"{{companyId}}\",\n    \"signInType\": \"passwordless\",\n    \"gophishGroupID\": \"gophish-456\"\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/groups",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Group with Leader",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 201', () => {",
+									"  pm.response.to.have.status(201);",
+									"});",
+									"pm.test('Group with leader created successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data).to.have.property('id');",
+									"  pm.expect(jsonData.data.name).to.equal('Group with Leader');",
+									"  pm.expect(jsonData.data.companyId).to.equal(pm.environment.get('companyId'));",
+									"  pm.expect(jsonData.data.signInType).to.equal('passwordless');",
+									"  pm.expect(jsonData.data.gophishGroupID).to.equal('gophish-789');",
+									"  pm.expect(jsonData.data.groupUsers).to.be.an('array').that.has.lengthOf(1);",
+									"  pm.expect(jsonData.data.groupUsers[0].user.email).to.equal('newleader@example.com');",
+									"  pm.expect(jsonData.data.groupUsers[0].role).to.equal('groupLeader');",
+									"  pm.expect(jsonData.createdBy.id).to.equal(pm.environment.get('adminUserId'));",
+									"  pm.environment.set('groupWithLeaderId', jsonData.data.id);",
+									"  pm.environment.set('newLeaderId', jsonData.data.groupUsers[0].user.id);",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Group with Leader\",\n    \"companyId\": \"{{companyId}}\",\n    \"signInType\": \"withPassword\",\n    \"gophishGroupID\": \"gophish-789\",\n    \"groupLeader\": {\n        \"firstName\": \"Pappu\",\n        \"lastName\": \"Leader\",\n        \"email\": \"zubair-zahid@jidatit.uk\",\n        \"signInType\": \"withPassword\"\n    }\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/groups/with-leader",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups",
+								"with-leader"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Groups",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Groups retrieved successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data).to.be.an('array');",
+									"  pm.expect(jsonData.data.length).to.be.at.least(2);",
+									"  const testGroup = jsonData.data.find(g => g.id === pm.environment.get('newGroupId'));",
+									"  pm.expect(testGroup).to.exist;",
+									"  pm.expect(testGroup.name).to.equal('New Test Group');",
+									"  pm.expect(testGroup.signInType).to.equal('passwordless');",
+									"  pm.expect(testGroup.gophishGroupID).to.equal('gophish-456');",
+									"  pm.expect(testGroup.isActive).to.be.true;",
+									"  pm.expect(jsonData.pagination).to.have.property('totalItems');",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/groups/get-groups",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"groups",
+								"get-groups"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "companyId",
+									"value": "{{companyId}}",
+									"disabled": true
+								},
+								{
+									"key": "signInType",
+									"value": "passwordless",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Group retrieved successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data.id).to.equal(pm.environment.get('newGroupId'));",
+									"  pm.expect(jsonData.data.name).to.equal('New Test Group');",
+									"  pm.expect(jsonData.data.companyId).to.equal(pm.environment.get('companyId'));",
+									"  pm.expect(jsonData.data.signInType).to.equal('passwordless');",
+									"  pm.expect(jsonData.data.gophishGroupID).to.equal('gophish-456');",
+									"  pm.expect(jsonData.data.isActive).to.be.true;",
+									"  pm.expect(jsonData.data.createdByUser.id).to.equal(pm.environment.get('adminUserId'));",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{newGroupId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"groups",
+								"{{newGroupId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Group updated successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data.id).to.equal(pm.environment.get('newGroupId'));",
+									"  pm.expect(jsonData.data.name).to.equal('Updated Test Group');",
+									"  pm.expect(jsonData.data.signInType).to.equal('passwordless');",
+									"  pm.expect(jsonData.data.gophishGroupID).to.equal('gophish-999');",
+									"  pm.expect(jsonData.data.isActive).to.be.true;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"Updated Test Group\", \"gophishGroupID\": \"gophish-999\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{newGroupId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"groups",
+								"{{newGroupId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Group Status",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Group status toggled successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data.id).to.equal(pm.environment.get('newGroupId'));",
+									"  pm.expect(jsonData.data.isActive).to.be.false;",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{newGroupId}}/toggle-status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"groups",
+								"{{newGroupId}}",
+								"toggle-status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Groups by Company",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Groups by company retrieved successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data).to.be.an('array');",
+									"  pm.expect(jsonData.count).to.be.at.least(2);",
+									"  const testGroup = jsonData.data.find(g => g.id === pm.environment.get('newGroupId'));",
+									"  pm.expect(testGroup).to.exist;",
+									"  pm.expect(testGroup.companyId).to.equal(pm.environment.get('companyId'));",
+									"  pm.expect(testGroup.signInType).to.equal('passwordless');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/company/{{companyId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"groups",
+								"company",
+								"{{companyId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Group Members",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Group members retrieved successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data).to.be.an('array');",
+									"  pm.expect(jsonData.count).to.equal(1);",
+									"  pm.expect(jsonData.data[0].user.email).to.equal('newleader@example.com');",
+									"  pm.expect(jsonData.data[0].role).to.equal('groupLeader');",
+									"  pm.expect(jsonData.data[0].user.signInType).to.equal('passwordless');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{groupWithLeaderId}}/members",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"groups",
+								"{{groupWithLeaderId}}",
+								"members"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Group User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('User added to group successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.message).to.equal('User added to group successfully');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"groupId\": \"{{newGroupId}}\", \"userId\": \"{{subscriberId}}\", \"role\": \"subscriber\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/groups/add-user",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"groups",
+								"add-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Add Group User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"members\": [\n        {\n            \"userId\": \"{{user_id}}\",\n            \"role\": \"subscriber\"\n        },\n        {\n            \"userId\": \"{{user_id_2}}\",\n            \"role\": \"groupLeader\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/groups/{{group_id}}/members/bulk-add",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"groups",
+								"{{group_id}}",
+								"members",
+								"bulk-add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Bulk Create Group User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"users\": [\n        {\n            \"firstName\": \"Jane\",\n            \"lastName\": \"Smith\",\n            \"email\": \"jane.smith@example.com\",\n            \"signInType\": \"withPassword\",\n            \"role\": \"subscriber\"\n        },\n        {\n            \"firstName\": \"Bob\",\n            \"lastName\": \"Jones\",\n            \"email\": \"bob.jones@example.com\",\n            \"signInType\": \"withPassword\",\n            \"role\": \"subscriber\"\n        }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/groups/{{group_id}}/members/bulk",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"groups",
+								"{{group_id}}",
+								"members",
+								"bulk"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Groups",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('User groups retrieved successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.data).to.be.an('array');",
+									"  pm.expect(jsonData.data.length).to.be.at.least(1);",
+									"  const testGroup = jsonData.data.find(g => g.group.id === pm.environment.get('newGroupId'));",
+									"  pm.expect(testGroup).to.exist;",
+									"  pm.expect(testGroup.group.signInType).to.equal('passwordless');",
+									"  pm.expect(testGroup.group.gophishGroupID).to.equal('gophish-999');",
+									"  pm.expect(testGroup.role).to.equal('subscriber');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/users/{{subscriberId}}/groups",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"users",
+								"{{subscriberId}}",
+								"groups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Group",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Status code is 200', () => {",
+									"  pm.response.to.have.status(200);",
+									"});",
+									"pm.test('Group deleted successfully', () => {",
+									"  const jsonData = pm.response.json();",
+									"  pm.expect(jsonData.success).to.be.true;",
+									"  pm.expect(jsonData.message).to.equal('Group deleted successfully');",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/groups/{{newGroupId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"groups",
+								"{{newGroupId}}"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Attack Simulations",
+			"item": [
+				{
+					"name": "Get All Attack Simulations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/attackSimulations?page=1&limit=10",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"attackSimulations"
+							],
+							"query": [
+								{
+									"key": "courseId",
+									"value": "{{course_id}}",
+									"description": "Filter by course ID (optional)",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "phishing",
+									"description": "Filter by simulation name (optional)",
+									"disabled": true
+								},
+								{
+									"key": "createdBy",
+									"value": "{{user_id}}",
+									"description": "Filter by creator user ID (optional)",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Page number for pagination"
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"description": "Number of items per page"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Attack Simulation By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/attackSimulations/{{attack_simulation_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"attackSimulations",
+								"{{attack_simulation_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Attack Simulation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"courseId\": \"{{course_id}}\",\n    \"name\": \"Phishing Simulation 1\",\n    \"template\": \"Urgent: Verify Your Account\",\n    \"url\": \"https://example.com/phishing\",\n    \"page\": \"<html><body>Fake login page</body></html>\",\n    \"smtp\": \"smtp://smtp.example.com:587\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/attackSimulations",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"attackSimulations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Attack Simulation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\": \"Updated Phishing Simulation\", \"template\": {\"subject\": \"Urgent: Account Verification Required\", \"body\": \"Please click the link to verify.\"}, \"url\": \"https://example.com/updated-phishing\", \"page\": \"<html><body>Updated fake login page</body></html>\", \"smtp\": \"smtp://smtp.example.com:587\"}"
+						},
+						"url": {
+							"raw": "{{base_url}}/v1/attackSimulations/{{attack_simulation_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"attackSimulations",
+								"{{attack_simulation_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Attack Simulation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/attackSimulations/{{attack_simulation_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"attackSimulations",
+								"{{attack_simulation_id}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Attack Simulation Exists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/v1/attackSimulations/{{attack_simulation_id}}/exists",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"v1",
+								"attackSimulations",
+								"{{attack_simulation_id}}",
+								"exists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Schedule Attack Simulations",
+			"item": [
+				{
+					"name": "Get All Schedule Attack Simulations",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/scheduleAttackSimulations?page=1&limit=10",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scheduleAttackSimulations"
+							],
+							"query": [
+								{
+									"key": "groupId",
+									"value": "{{groupId}}",
+									"disabled": true
+								},
+								{
+									"key": "bundleId",
+									"value": "{{bundleId}}",
+									"disabled": true
+								},
+								{
+									"key": "status",
+									"value": "draft",
+									"disabled": true
+								},
+								{
+									"key": "launchStatus",
+									"value": "pending",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Schedule Attack Simulation by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/scheduleAttackSimulations/{{scheduleId}}",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scheduleAttackSimulations",
+								"{{scheduleId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Schedule Attack Simulation (Deliver Immediately)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Immediate Phishing Campaign\",\n  \"groupIds\": [\"{{groupId1}}\"],\n  \"bundleId\": \"{{bundleId}}\",\n  \"campaignType\": \"Simulated Phishing & Security Awareness Training\",\n  \"launchStatus\": \"Deliver Immediately\",\n  \"timezone\": \"Asia/Karachi\",\n  \"courseIds\": [\"{{course_id_1}}\", \"{{course_id_2}}\"]\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/scheduleAttackSimulations",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scheduleAttackSimulations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Schedule Attack Simulation (Schedule Later)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Scheduled Advance Training\",\n  \"groupIds\": [\"{{groupId1}}\"],\n  \"userIds\": [\"{{userids1}}\", \"{{userIds2}}\"],\n  \"bundleId\": \"{{bundleId}}\",\n  \"campaignType\": \"Advance Training\",\n  \"launchStatus\": \"Schedule Later\",\n  \"launchDate\": \"2025-08-25\",\n  \"launchTime\": \"09:00\",\n  \"timezone\": \"UTC\",\n  \"courseIds\": [\"{{course_id_4}}\", \"{{course_id_5}}\"]\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/scheduleAttackSimulations",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"scheduleAttackSimulations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Schedule Attack Simulation",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Campaign\",\n  \"groupIds\": [\"{{groupId1}}\"],\n  \"courseIds\": [\"course_id_1\", \"course_id_3\"],\n  \"launchDate\": \"2025-08-26\",\n  \"launchTime\": \"14:00\",\n  \"timezone\": \"America/New_York\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/schedule-attack-simulations/{{scheduleId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schedule-attack-simulations",
+								"{{scheduleId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Schedule Attack Simulation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/schedule-attack-simulations/{{scheduleId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"schedule-attack-simulations",
+								"{{scheduleId}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Manual Trigger: Process Scheduled Simulations",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/manual-trigger/scheduled-simulations",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"manual-trigger",
+								"scheduled-simulations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Manual Trigger: Process Course Lifecycle",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/manual-trigger/course-lifecycle",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"manual-trigger",
+								"course-lifecycle"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Manual Trigger: Process Attack Simulation Launches",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/admin/manual-trigger/attack-launches",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"admin",
+								"manual-trigger",
+								"attack-launches"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get User Visible Courses",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/v1/user-courses/visible?userId={{userId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"user-courses",
+								"visible"
+							],
+							"query": [
+								{
+									"key": "userId",
+									"value": "{{userId}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Entra ID",
+			"item": [
+				{
+					"name": "Initiate Microsoft Signup",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"Zubair\",\n  \"lastName\": \"Zaee\",\n  \"email\": \"aqeel4622@outlook.com\",\n  \"role\": \"subscriber\"\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/users/microsoft-signup",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"microsoft-signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Resend Microsoft Invitation",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/users/{{userId}}/resend-microsoft-invitation",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"{{userId}}",
+								"resend-microsoft-invitation"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Microsoft Invitation Status",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/users/:userId/microsoft-invitation-status",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								":userId",
+								"microsoft-invitation-status"
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "replace_with_user_id"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Invite Guest User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"guest@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/users/invite-guest",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"users",
+								"invite-guest"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Initiate Microsoft Login",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{karim}}/api/v1/auth/microsoft",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"microsoft"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Microsoft Callback (Manual)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{karim}}/api/v1/auth/microsoft/callback?code={{authCode}}&state={{state}}",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"auth",
+								"microsoft",
+								"callback"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "{{authCode}}"
+								},
+								{
+									"key": "state",
+									"value": "{{state}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Microsoft Signup Callback (Manual)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{karim}}/api/users/microsoft-signup/callback?code={{authCode}}&state={{state}}",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"users",
+								"microsoft-signup",
+								"callback"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "{{authCode}}"
+								},
+								{
+									"key": "state",
+									"value": "{{state}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Assignments",
+			"item": [
+				{
+					"name": "Get All Assignments",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/assignments?lessonId=123e4567-e89b-12d3-a456-426614174001&page=1&limit=10",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments"
+							],
+							"query": [
+								{
+									"key": "lessonId",
+									"value": "123e4567-e89b-12d3-a456-426614174001"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assignment by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/assignments/123e4567-e89b-12d3-a456-426614174002",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments",
+								"123e4567-e89b-12d3-a456-426614174002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Assignment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"lessonId\":\"123e4567-e89b-12d3-a456-426614174001\",\"title\":\"New Assignment\",\"description\":\"A test assignment\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/assignments",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Assignment",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"title\":\"Updated Assignment\",\"description\":\"Updated description\"}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/assignments/123e4567-e89b-12d3-a456-426614174002",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments",
+								"123e4567-e89b-12d3-a456-426614174002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Assignment",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/assignments/123e4567-e89b-12d3-a456-426614174002",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments",
+								"123e4567-e89b-12d3-a456-426614174002"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Assignment Exists",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{authToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/assignments/123e4567-e89b-12d3-a456-426614174002/exists",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"assignments",
+								"123e4567-e89b-12d3-a456-426614174002",
+								"exists"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Email Template",
+			"item": [
+				{
+					"name": "Get Email templates",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{accessToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{karim}}/api/v1/emailTemplates/?page=1&limit=10",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"emailTemplates",
+								""
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Email Template By ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{karim}}/api/v1/emailTemplates/fb01f84a-5291-4d1a-9bf1-72baa55d9905",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"emailTemplates",
+								"fb01f84a-5291-4d1a-9bf1-72baa55d9905"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Email Template",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{jwt_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"subject\" : \"Congratulations! You’ve Completed Advance Training\",\n    \"body\": \"\\n          <html>\\n            <body style=\\\"font-family: Arial, sans-serif; line-height: 1.6;\\\">\\n              <h2>Congratulations on Your Achievement!</h2>\\n              <p>Dear Nigga Zubair,</p>\\n              <p>You’ve successfully completed the [module_name] module. Great job on advancing your cybersecurity skills!</p>\\n              <p>View your progress or start your next module at <a href=\\\"https://lms2.jidatit.uk/courses\\\" style=\\\"color: #007bff;\\\">LMS Dashboard</a>.</p>\\n              <p>Best regards,<br>The LMS Team</p>\\n            </body>\\n          </html>\\n        \"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{karim}}/api/v1/emailTemplates/fb01f84a-5291-4d1a-9bf1-72baa55d9905",
+							"host": [
+								"{{karim}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"emailTemplates",
+								"fb01f84a-5291-4d1a-9bf1-72baa55d9905"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Scheduled Emails",
+			"item": []
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000"
+		},
+		{
+			"key": "admin_jwt",
+			"value": ""
+		},
+		{
+			"key": "refresh_token",
+			"value": ""
+		},
+		{
+			"key": "company_id",
+			"value": ""
+		},
+		{
+			"key": "user_id_with_password",
+			"value": ""
+		},
+		{
+			"key": "otp_with_password",
+			"value": ""
+		},
+		{
+			"key": "user_id_passwordless",
+			"value": ""
+		},
+		{
+			"key": "otp_passwordless",
+			"value": ""
+		},
+		{
+			"key": "user_jwt",
+			"value": ""
+		},
+		{
+			"key": "group_id",
+			"value": ""
+		},
+		{
+			"key": "leader_id",
+			"value": ""
+		},
+		{
+			"key": "new_member_id",
+			"value": ""
+		},
+		{
+			"key": "state",
+			"value": ""
+		}
+	]
+}
