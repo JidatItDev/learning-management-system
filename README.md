@@ -1,4 +1,4 @@
-# Learning Management System (LMS) — Backend Boilerplate Summary
+# Learning Management System (LMS) — Backend Summary
 
 This project is a modern Node.js 22 boilerplate built to serve as a solid foundation for developing a Learning Management System (LMS) or any similar backend system. It follows best practices in terms of scalability, security, maintainability, and documentation.
 
