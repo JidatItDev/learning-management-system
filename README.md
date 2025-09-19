@@ -1,4 +1,4 @@
-# learning-management-system
+# Learning Management System
 
 LMS Node.js 22 Boilerplate Setup Guide
 Date Created: July 4, 2025, 12:46 PM PKTAuthors: Jidat IT Development Team
